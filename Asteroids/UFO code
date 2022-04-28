@@ -1,0 +1,101 @@
+--***UFO spawn***
+	if Level.need > 1 then
+		timers.UFO = timers.UFO + (dt/onScreen)
+		if timers.UFO <= 1 then
+			timers.UFO = 0
+			spawnUFO = math.random(1, 1000)
+			if spawnUFO == 1 then
+				local UFOsize = math.random(1,5)
+				if UFOsize >= 2 then
+					UFOsize = 1.5
+				end
+				UFOxy = math.random(1,2)
+				if UFOxy == 1 then
+					UFOx = math.random(0 - (UFOimg.img:getWidth() * UFOsize), love.graphics.getWidth() --[[+ (UFOimg.img:getWidth() * UFOsize)]])
+					UFOy = 0 - (UFOimg.img:getWidth() * UFOsize)
+				elseif UFOxy == 2 then
+					UFOx = 0 - (UFOimg.img:getHeight() * UFOsize)
+					UFOy = math.random(0 - (UFOimg.img:getHeight() * UFOsize), love.graphics.getHeight() --[[+ (UFOimg.img:getHeight() * UFOsize)]])
+				end
+				local UFOvel = math.random()
+				local neg = math.random(1,2)
+				local neg1 = math.random(1,2)
+				if neg == 2 then
+					neg = -1
+				end
+				if neg1 == 2 then
+					neg1 = -1
+				end
+
+				newUFO = {cimg = UFOimg.img, x = UFOx, y = UFOy, vel = {x = UFOvel * neg, y = (1 - UFOvel) * neg1}, canShoot = 100, size = UFOsize, rotate = 10, leave = 3}
+				table.insert(UFOs, newUFO)
+
+			end
+		end
+	end
+
+	--***UFO movement***
+
+	for i, UFO in ipairs (UFOs) do
+
+		UFO.x = UFO.x + UFO.vel.x * 2
+		UFO.y = UFO.y + UFO.vel.y * 2
+
+
+		UFO.rotate = UFO.rotate - 1
+
+		if UFO.rotate <= 0 and UFO.cimg == UFOimg.img then
+			UFO.cimg = UFOimg.img2
+			UFO.rotate = 10
+		end
+
+		if UFO.rotate <= 0 and UFO.cimg == UFOimg.img2 then
+			UFO.cimg = UFOimg.img3
+			UFO.rotate = 10
+		end
+
+		if UFO.rotate <= 0 and UFO.cimg == UFOimg.img3 then
+			UFO.cimg = UFOimg.img
+			UFO.rotate = 10
+		end
+
+		
+
+		if UFO.leave > 0 then
+			if UFO.x < 0 - (UFOimg.img:getWidth() * UFO.size) then
+				UFO.x = UFO.x + (UFOimg.img:getWidth() * UFO.size) + love.graphics.getWidth()
+			end
+			if UFO.x > love.graphics.getWidth() then
+				UFO.x = UFO.x - (UFOimg.img:getWidth() * UFO.size) - love.graphics.getWidth()
+			end
+
+			if UFO.y < 0 - (UFOimg.img:getHeight() * UFO.size) then
+				UFO.y = UFO.y + (UFOimg.img:getHeight() * UFO.size) + love.graphics.getHeight()
+			end
+			if UFO.y > love.graphics.getHeight() then
+				UFO.y = UFO.y - (UFOimg.img:getHeight() * UFO.size) - love.graphics.getHeight()
+			end
+		end
+
+		if UFO.leave <= 0 then
+			if UFO.x < 0 - (UFOimg.img:getWidth() * UFO.size) then
+				table.remove(UFOs, i)
+			end
+			if UFO.x > love.graphics.getWidth() then
+				table.remove(UFOs, i)
+			end
+
+			if UFO.y < 0 - (UFOimg.img:getHeight() * UFO.size) then
+				table.remove(UFOs, i)
+			end
+			if UFO.y > love.graphics.getHeight() then
+				table.remove(UFOs, i)
+			end
+		end
+
+		
+		if UFO.leave > 0 and UFO.rotate <= 0 then
+			UFO.leave = UFO.leave - 1
+		end
+
+	end 
